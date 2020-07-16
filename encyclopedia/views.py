@@ -8,3 +8,12 @@ def index(request):
         "entries": util.list_entries()
     })
 
+def title(request, title):
+    # if entry doesn't exist
+    # if 
+
+    # else, return entry page
+
+    return render(request, "encyclopedia/entry.html", {
+        "title": title
+    })
