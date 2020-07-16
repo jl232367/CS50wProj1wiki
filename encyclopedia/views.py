@@ -1,5 +1,4 @@
 from django.shortcuts import render
-
 from . import util
 
 
@@ -8,12 +7,15 @@ def index(request):
         "entries": util.list_entries()
     })
 
-def title(request, title):
+def entry(request, entry):
     # if entry doesn't exist
-    # if 
-
+    entry_list = util.list_entries()
+    if entry not in entry_list:
+        return render(request, "encyclopedia/error.html", {
+            "entry": entry
+        })
     # else, return entry page
-
     return render(request, "encyclopedia/entry.html", {
-        "title": title
+        "entry": entry,
+        "text": util.get_entry(entry)
     })
