@@ -1,5 +1,10 @@
 from django.shortcuts import render
 from . import util
+from django import forms
+
+class SearchForm(forms.Form):
+    query = forms.CharField(label="query", max_length="50")
+
 
 
 def index(request):
@@ -23,3 +28,11 @@ def entry(request, entry):
         "entry": normalize_str(entry),
         "text": util.get_entry(entry)
     })
+
+def search(request):
+    if request.method == "POST":
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            return render(request, "encyclopedia/entry.html", {
+                "entry": util.get_entry(form.query)
+            })
