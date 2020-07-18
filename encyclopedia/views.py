@@ -6,7 +6,6 @@ class SearchForm(forms.Form):
     query = forms.CharField(label="query", max_length="50")
 
 
-
 def index(request):
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
@@ -17,22 +16,26 @@ def normalize_str(word):
     return first_letter + word[1:]
 
 def entry(request, entry):
-    # if entry doesn't exist
+    # if entry matches a page
     entry_list = util.list_entries()
-    if normalize_str(entry) not in entry_list:
-        return render(request, "encyclopedia/error.html", {
-            "entry": entry
-        })
-    # else, return entry page
-    return render(request, "encyclopedia/entry.html", {
-        "entry": normalize_str(entry),
-        "text": util.get_entry(entry)
+    for page in entry_list:
+        # check ignores case
+        if page.lower() == entry.lower():
+            return render(request, "encyclopedia/entry.html", {
+                "entry": normalize_str(entry),
+                "text": util.get_entry(entry)
+            })
+    # else, page doesn't exist, return error
+    return render(request, "encyclopedia/error.html", {
+        "entry": entry
     })
 
-def search(request):
+
+def search(request, query):
     if request.method == "POST":
         form = SearchForm(request.POST)
         if form.is_valid():
             return render(request, "encyclopedia/entry.html", {
-                "entry": util.get_entry(form.query)
+                "entry": util.get_entry(form),
+                "text": util.get_entry(query)
             })
