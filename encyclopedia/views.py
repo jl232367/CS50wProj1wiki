@@ -6,7 +6,7 @@ from .helpers import normalize_str
 
 
 class SearchForm(forms.Form):
-    search = forms.CharField(label="q", max_length="25")
+    search = forms.CharField(label="search", max_length="25")
 
     # for validating data
     # def clean(self):
@@ -44,7 +44,7 @@ def search(request):
     if request.method == "POST":
         form = SearchForm(request.POST)
         if form.is_valid():
-            search = form.cleaned_data["q"]
+            search = form.cleaned_data["search"]
 
             # if search is in current wiki entries
             for page in util.list_entries():
