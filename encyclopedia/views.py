@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from . import util
 from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
@@ -49,16 +49,11 @@ def search(request):
             # if search is in current wiki entries
             for page in util.list_entries():
                 if page.lower() == search.lower():
-                    return render(request, "encyclopedia/entry.html", {
-                        "entry": normalize_str(search),
-                        "text": util.get_entry(page)
-<<<<<<< HEAD
-                    })
-=======
-                     })
->>>>>>> 85c3343705abf515c5f04c3a2188bdda7e52ab4c
-                    # return HttpResponseRedirect(reverse(f"wiki/{search}"))
-
+                    # return render(request, "encyclopedia/entry.html", {
+                    #     "entry": normalize_str(search),
+                    #     "text": util.get_entry(page)
+                    # })
+                    return redirect(f"wiki/{page}")
 
             # # else, return the list of possible search results
             return render(request, "encyclopedia/search.html", {
