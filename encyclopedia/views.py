@@ -52,7 +52,11 @@ def search(request):
                     return render(request, "encyclopedia/entry.html", {
                         "entry": normalize_str(search),
                         "text": util.get_entry(page)
+<<<<<<< HEAD
                     })
+=======
+                     })
+>>>>>>> 85c3343705abf515c5f04c3a2188bdda7e52ab4c
                     # return HttpResponseRedirect(reverse(f"wiki/{search}"))
 
 
