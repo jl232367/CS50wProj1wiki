@@ -52,7 +52,7 @@ def search(request):
                 if page.lower() == search.lower():
                      return render(request, "encyclopedia/entry.html", {
                         "entry": normalize_str(search),
-                        "text": util.get_entry(search)
+                        "text": util.get_entry(page)
                      })
                     # return HttpResponseRedirect(reverse(f"wiki/{search}"))
 
