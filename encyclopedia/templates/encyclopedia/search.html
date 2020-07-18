@@ -2,7 +2,7 @@
 
 {% block body %}
 
-
+    <!-- List Errors in Form -->
     {% if form.errors %}
         <h1> Errors: </h1>
         {% for field in form %}
@@ -13,7 +13,11 @@
         {% endfor %}
     {% endif %}
 
-    
-    {{ search }}
+    <!-- List Possible Search Results -->
+    {% for result in search %}
+
+        <li><a href="wiki/{{ result }}">{{ result }}</a></li>
+
+    {% endfor %}
 
 {% endblock %}

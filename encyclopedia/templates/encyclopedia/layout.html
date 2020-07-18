@@ -14,7 +14,8 @@
                 <h2>Wiki</h2>
                 <form action="search" method="POST">
                     {% csrf_token %}
-                    <input class="search" type="text" name="q" value="query" placeholder="Search Encyclopedia">
+                    <input class="search" type="text" name="q" value="search" placeholder="Search Encyclopedia">
+                    <input type="submit">
                 </form>
                 <div>
                     <a href="{% url 'index' %}">Home</a>

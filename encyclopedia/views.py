@@ -2,9 +2,11 @@ from django.shortcuts import render
 from . import util
 from django import forms
 from django.http import HttpResponse
+from .helpers import normalize_str
+
 
 class SearchForm(forms.Form):
-    search = forms.CharField(label="search", max_length="25")
+    search = forms.CharField(label="q", max_length="25")
 
     # for validating data
     # def clean(self):
@@ -17,9 +19,10 @@ def index(request):
         "entries": util.list_entries()
     })
 
-def normalize_str(word):
-    first_letter = word[0].upper()
-    return first_letter + word[1:]
+# def normalize_str(word):
+#     first_letter = word[0].upper()
+#     return first_letter + word[1:]
+
 
 def entry(request, entry):
     # if entry matches a page
@@ -38,39 +41,28 @@ def entry(request, entry):
 
 
 def search(request):
-    # return HttpResponse("Success")
-
     if request.method == "POST":
-
         form = SearchForm(request.POST)
-
-
         if form.is_valid():
             search = form.cleaned_data["search"]
+
+            # if search is in current wiki entries
+            for page in util.list_entries():
+                if page.lower() == search.lower():
+                    return render(request, "encyclopedia/entry.html", {
+                        "entry": normalize_str(search),
+                        "text": util.get_entry(search)
+                    })
+
+            # else, return the list of possible search results
             return render(request, "encyclopedia/search.html", {
                 "search": search
             })
 
-            return HttpResponse("Success")    
-
-        #render errors        
+        # form is invalid, render errors        
         return render (request, "encyclopedia/search.html", {
             "form": form
         })
-            
-            # entry_list = util.list_entries()
-
-            # if form.data in entry_list:
-
-            #     return render(request, "encyclopedia/search.html", {
-            #         "entry": form,
-            #     })
-
-    
-    # if request.method == "POST":
-    #     form = SearchForm(request.POST)
-    #     if form.is_valid():
-    #         return render(request, "encyclopedia/entry.html", {
-    #             "entry": util.get_entry(form),
-    #             "text": util.get_entry(query)
-    #         })
+    return render(request, "encyclopedia/error.html", {
+        "entry": "Please use search on homepage for searching."
+    })
