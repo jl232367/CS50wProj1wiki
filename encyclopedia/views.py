@@ -44,7 +44,7 @@ def search(request):
     if request.method == "POST":
         form = SearchForm(request.POST)
         if form.is_valid():
-            search = form.cleaned_data["search"]
+            search = form.cleaned_data["q"]
 
             # if search is in current wiki entries
             for page in util.list_entries():
