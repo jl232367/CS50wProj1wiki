@@ -1,9 +1,15 @@
 from django.shortcuts import render
 from . import util
 from django import forms
+from django.http import HttpResponse
 
 class SearchForm(forms.Form):
-    query = forms.CharField(label="query", max_length="50")
+    search = forms.CharField(label="search", max_length="25")
+
+    # for validating data
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     search = cleaned_data.get("search")
 
 
 def index(request):
@@ -31,11 +37,40 @@ def entry(request, entry):
     })
 
 
-def search(request, query):
+def search(request):
+    # return HttpResponse("Success")
+
     if request.method == "POST":
+
         form = SearchForm(request.POST)
+
+
         if form.is_valid():
-            return render(request, "encyclopedia/entry.html", {
-                "entry": util.get_entry(form),
-                "text": util.get_entry(query)
+            search = form.cleaned_data["search"]
+            return render(request, "encyclopedia/search.html", {
+                "search": search
             })
+
+            return HttpResponse("Success")    
+
+        #render errors        
+        return render (request, "encyclopedia/search.html", {
+            "form": form
+        })
+            
+            # entry_list = util.list_entries()
+
+            # if form.data in entry_list:
+
+            #     return render(request, "encyclopedia/search.html", {
+            #         "entry": form,
+            #     })
+
+    
+    # if request.method == "POST":
+    #     form = SearchForm(request.POST)
+    #     if form.is_valid():
+    #         return render(request, "encyclopedia/entry.html", {
+    #             "entry": util.get_entry(form),
+    #             "text": util.get_entry(query)
+    #         })

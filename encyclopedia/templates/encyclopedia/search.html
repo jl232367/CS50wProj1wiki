@@ -3,8 +3,17 @@
 {% block body %}
 
 
-    <h1>{{ entry }}</h1>
-    <P> {{ text }} </P>
+    {% if form.errors %}
+        <h1> Errors: </h1>
+        {% for field in form %}
 
+            {{ field.data }}
+            {{ field.errors }}
+
+        {% endfor %}
+    {% endif %}
+
+    
+    {{ search }}
 
 {% endblock %}
