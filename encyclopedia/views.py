@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from . import util
 from django import forms
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from .helpers import normalize_str
-
+from django.urls import reverse
 
 class SearchForm(forms.Form):
     search = forms.CharField(label="search", max_length="25")
@@ -49,10 +49,12 @@ def search(request):
             # if search is in current wiki entries
             for page in util.list_entries():
                 if page.lower() == search.lower():
-                    return render(request, "encyclopedia/entry.html", {
-                        "entry": normalize_str(search),
-                        "text": util.get_entry(search)
-                    })
+                    # return render(request, "encyclopedia/entry.html", {
+                    #     "entry": normalize_str(search),
+                    #     "text": util.get_entry(search)
+                    # })
+                    return HttpResponseRedirect(reverse(f"wiki/{search}"))
+
 
             # else, return the list of possible search results
             return render(request, "encyclopedia/search.html", {
