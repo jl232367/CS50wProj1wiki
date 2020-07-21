@@ -1,0 +1,13 @@
+{% extends "encyclopedia/layout.html" %}
+
+{ block body }
+    
+    <form action="">
+
+        {% csrf_token %}
+        {{ text_area }}
+        <textarea>a text area</textarea>
+
+    </form>
+
+{ endblock }

@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from . import util
 from django import forms
+from django.forms import Textarea
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .helpers import normalize_str
-import markdown2
+from markdown2 import Markdown
 
 class SearchForm(forms.Form):
     search = forms.CharField(label="search", max_length="25")
@@ -14,19 +15,17 @@ class SearchForm(forms.Form):
     #     cleaned_data = super().clean()
     #     search = cleaned_data.get("search")
 
+class AddPageForm(forms.Form):
+    textarea = forms.Textarea()
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
 
-# def normalize_str(word):
-#     first_letter = word[0].upper()
-#     return first_letter + word[1:]
-
-
 def entry(request, entry):
     # if entry matches a page
+    md = Markdown()
     entry_list = util.list_entries()
     for page in entry_list:
         # check ignores case
@@ -39,7 +38,6 @@ def entry(request, entry):
     return render(request, "encyclopedia/error.html", {
         "entry": entry
     })
-
 
 def search(request):
     if request.method == "POST":
@@ -73,4 +71,9 @@ def search(request):
         })
     return render(request, "encyclopedia/error.html", {
         "entry": "Please use search on homepage for searching."
+    })
+
+def add(request):
+    return render(request, "encyclopedia/add.html", {
+        "text_area": AddPageForm()
     })
