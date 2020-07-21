@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from . import util
 from django import forms
 from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from .helpers import normalize_str
 import markdown2
 
@@ -46,18 +47,24 @@ def search(request):
         if form.is_valid():
             search = form.cleaned_data["search"]
 
+            #holds the possible matches for search query
+            search_matches = []
+
             # if search is in current wiki entries
             for page in util.list_entries():
                 if page.lower() == search.lower():
-                    # return render(request, "encyclopedia/entry.html", {
-                    #     "entry": normalize_str(search),
-                    #     "text": util.get_entry(page)
-                    # })
-                    return redirect(f"wiki/{page}")
+                    # return redirect(f"wiki/{page}")
+                    # this reverse() func uses the url "name" attribute for redirection
+                    return HttpResponseRedirect(reverse("entry", kwargs={"entry": page}))
+                else:
+                    #if substring of search query matches with wiki entries
+                    #add to list
+                    if search.lower() in page.lower():
+                        search_matches.append(page)
 
-            # # else, return the list of possible search results
+            # else, return the sorted list of possible search results
             return render(request, "encyclopedia/search.html", {
-                "search": search
+                "search": sorted(search_matches)
             })
 
         # form is invalid, render errors        
