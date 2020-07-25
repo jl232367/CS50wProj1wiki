@@ -1,27 +1,28 @@
 from django.shortcuts import render, redirect
 from . import util
 from django import forms
-from django.forms import Textarea
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .helpers import normalize_str
 from markdown2 import Markdown
+import markdown2
 
 class SearchForm(forms.Form):
     search = forms.CharField(label="search", max_length="25")
 
-    # for validating data
-    # def clean(self):
-    #     cleaned_data = super().clean()
-    #     search = cleaned_data.get("search")
+class CreatePageForm(forms.Form):
+    title = forms.CharField(label="Title", max_length="50")
+    content = forms.CharField(widget=forms.Textarea(attrs={"rows": 10, "cols": 50}))
 
-class AddPageForm(forms.Form):
-    textarea = forms.Textarea()
+class EditPageForm(forms.Form):
+    content = forms.CharField(widget=forms.Textarea(attrs={"rows": 10, "cols": 50}))
+
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
+
 
 def entry(request, entry):
     # if entry matches a page
@@ -30,14 +31,18 @@ def entry(request, entry):
     for page in entry_list:
         # check ignores case
         if page.lower() == entry.lower():
+
+            # gets page from entries and converts md to html
+            converted_page = md.convert(util.get_entry(page))
+
             return render(request, "encyclopedia/entry.html", {
-                "entry": normalize_str(entry),
-                "text": util.get_entry(entry)
+                "entry": converted_page
             })
     # else, page doesn't exist, return error
     return render(request, "encyclopedia/error.html", {
         "entry": entry
     })
+
 
 def search(request):
     if request.method == "POST":
@@ -51,7 +56,7 @@ def search(request):
             # if search is in current wiki entries
             for page in util.list_entries():
                 if page.lower() == search.lower():
-                    # return redirect(f"wiki/{page}")
+                    # SIMPLEST: return redirect(f"wiki/{page}")
                     # this reverse() func uses the url "name" attribute for redirection
                     return HttpResponseRedirect(reverse("entry", kwargs={"entry": page}))
                 else:
@@ -73,7 +78,39 @@ def search(request):
         "entry": "Please use search on homepage for searching."
     })
 
-def add(request):
-    return render(request, "encyclopedia/add.html", {
-        "text_area": AddPageForm()
+
+def create(request):
+    # ensures that form action is POST, and initiates processing of data
+    if request.method == "POST":
+        form = CreatePageForm(request.POST)
+
+        # checks that new input is valid
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            content = form.cleaned_data["content"]
+
+            
+            # check if the entry already exists
+            for page in util.list_entries():
+                # if so, then present error page
+                if page.lower() == title.lower():
+                    return render(request, "encyclopedia/error.html", {
+                        "entry": f"{title} was already a wiki page. Try again next time!",
+                    })
+
+            # otherwise, save new page and redirect to new page
+            util.save_entry(title, content)
+            return HttpResponseRedirect(reverse("entry", kwargs={"entry": title}))
+
+    return render(request, "encyclopedia/create.html", {
+        "form": CreatePageForm()
+    })    
+
+
+def edit(request):
+
+    
+
+    return render(request, "encyclopedia/edit.html", {
+        "form": EditPageForm(initial={})
     })

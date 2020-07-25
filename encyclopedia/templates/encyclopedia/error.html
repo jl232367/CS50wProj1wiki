@@ -1,9 +1,11 @@
 {% extends "encyclopedia/layout.html" %}
+{% load static %}
 
 {% block body %}
 
 
-    <h1>{{ entry }} was not found</h1>
+    <h1>{{ entry }}</h1>
 
+    <img src="{% static 'encyclopedia/images/shrug.png' %}" alt="My image" style="max-width: 75%;">
 
 {% endblock %}

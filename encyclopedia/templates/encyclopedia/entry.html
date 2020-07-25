@@ -2,9 +2,13 @@
 
 {% block body %}
 
+    {{ entry|safe }}
 
-    <h1>{{ entry }}</h1>
-    {{ text }}
+    <form action="{% url 'edit' %}" method="POST">
 
+        {% csrf_token %}
+
+        <input type="submit" name="edit" value="Edit Page">
+    </form>
 
 {% endblock %}
