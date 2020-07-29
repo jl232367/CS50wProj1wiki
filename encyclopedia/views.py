@@ -15,7 +15,7 @@ class CreatePageForm(forms.Form):
     content = forms.CharField(widget=forms.Textarea(attrs={"rows": 10, "cols": 50}))
 
 class EditPageForm(forms.Form):
-    content = forms.CharField(widget=forms.Textarea(attrs={"rows": 10, "cols": 50}))
+    content = forms.CharField(help_text="Some Text here", widget=forms.Textarea(attrs={"rows": 10, "cols": 50}))
 
 
 def index(request):
@@ -109,8 +109,7 @@ def create(request):
 
 def edit(request):
 
-    
 
     return render(request, "encyclopedia/edit.html", {
-        "form": EditPageForm(initial={})
+        "form": EditPageForm(initial=request.GET)
     })
