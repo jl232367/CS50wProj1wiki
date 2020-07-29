@@ -4,10 +4,9 @@
 
 <h1>Edit This Wiki Page</h1>
 
-<form>
-
+<form action="" method="POST">
+    
     {% csrf_token %}
-
     {{ form.as_p }}
     <input type="submit" name="edit" value="Save Page">
 

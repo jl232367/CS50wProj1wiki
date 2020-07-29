@@ -6,6 +6,7 @@ from django.urls import reverse
 from .helpers import normalize_str
 from markdown2 import Markdown
 import markdown2
+import random
 
 class SearchForm(forms.Form):
     search = forms.CharField(label="search", max_length="25")
@@ -15,7 +16,7 @@ class CreatePageForm(forms.Form):
     content = forms.CharField(widget=forms.Textarea(attrs={"rows": 10, "cols": 50}))
 
 class EditPageForm(forms.Form):
-    content = forms.CharField(help_text="Some Text here", widget=forms.Textarea(attrs={"rows": 10, "cols": 50}))
+    content = forms.CharField(initial="Here is more text", widget=forms.Textarea(attrs={"rows": 10, "cols": 50}))
 
 
 def index(request):
@@ -36,6 +37,7 @@ def entry(request, entry):
             converted_page = md.convert(util.get_entry(page))
 
             return render(request, "encyclopedia/entry.html", {
+                "title": page,
                 "entry": converted_page
             })
     # else, page doesn't exist, return error
@@ -107,9 +109,30 @@ def create(request):
     })    
 
 
-def edit(request):
+def edit(request, title):
 
+    content = util.get_entry(title)
+    form = EditPageForm()
+    form.fields["content"].initial = content
+
+    # ensures that form action is POST, and initiates processing of data
+    if request.method == "POST":
+        form = EditPageForm(request.POST)
+
+        # checks that new input is valid
+        if form.is_valid():
+            content = form.cleaned_data["content"]
+
+            # otherwise, save new page and redirect to new page
+            util.save_entry(title, content)
+            return HttpResponseRedirect(reverse("entry", kwargs={"entry": title}))
 
     return render(request, "encyclopedia/edit.html", {
-        "form": EditPageForm(initial=request.GET)
+        "title": title,
+        "form": form
     })
+
+
+def randomPage(request):
+    choice = random.choice(util.list_entries())
+    return HttpResponseRedirect(reverse("entry", kwargs={"entry": choice}))

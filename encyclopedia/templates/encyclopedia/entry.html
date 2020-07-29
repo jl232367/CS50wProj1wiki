@@ -4,7 +4,7 @@
 
     {{ entry|safe }}
 
-    <form action="{% url 'edit' %}" method="POST">
+    <form action="{% url 'edit' title %}" method="">
 
         {% csrf_token %}
 
